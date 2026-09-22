@@ -11,19 +11,24 @@ app.get("/", (req, res) => {
     });
 });
 
-async function startServer() {
+app.get("/health", async (req, res) => {
     try {
         await pool.query("SELECT 1");
 
-        console.log("PostgreSQL connection successful");
-
-        app.listen(PORT, () => {
-            console.log(`Payments Ledger API running on port ${PORT}`);
+        res.status(200).json({
+            status: "ok",
+            database: "connected"
         });
     } catch (error) {
-        console.error("PostgreSQL connection failed:", error.message);
-        process.exit(1);
-    }
-}
+        console.error("Health check failed:", error.message);
 
-startServer();
+        res.status(503).json({
+            status: "error",
+            database: "disconnected"
+        });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Payments Ledger API running on port ${PORT}`);
+});
