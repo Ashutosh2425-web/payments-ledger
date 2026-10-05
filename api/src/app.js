@@ -5,6 +5,9 @@ const app = express();
 
 app.use(express.json());
 
+const authRoutes = require("./modules/auth/auth.routes");
+app.use("/auth", authRoutes);
+
 app.get("/", (req, res) => {
     res.json({
         message: "Payments Ledger API is running"
