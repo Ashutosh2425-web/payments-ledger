@@ -1,11 +1,13 @@
 const express = require("express");
 const pool = require("./db/pool");
+const authRoutes = require("./modules/auth/auth.routes");
+const authMiddleware = require("./modules/auth/auth.middleware");
+const requireRole = require("./modules/auth/role.middleware");
 
 const app = express();
 
 app.use(express.json());
 
-const authRoutes = require("./modules/auth/auth.routes");
 app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
@@ -31,5 +33,24 @@ app.get("/health", async (req, res) => {
         });
     }
 });
+
+app.get("/protected", authMiddleware, (req, res) => {
+    res.status(200).json({
+        message: "You accessed a protected route",
+        user: req.user
+    });
+});
+
+app.get(
+    "/admin",
+    authMiddleware,
+    requireRole("ADMIN"),
+    (req, res) => {
+        res.status(200).json({
+            message: "Welcome to the admin area",
+            user: req.user
+        });
+    }
+);
 
 module.exports = app;
