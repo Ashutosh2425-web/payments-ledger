@@ -1,14 +1,17 @@
 const express = require("express");
 const pool = require("./db/pool");
+
 const authRoutes = require("./modules/auth/auth.routes");
 const authMiddleware = require("./modules/auth/auth.middleware");
 const requireRole = require("./modules/auth/role.middleware");
+const accountsRoutes = require("./modules/accounts/accounts.routes");
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/auth", authRoutes);
+app.use("/accounts", accountsRoutes);
 
 app.get("/", (req, res) => {
     res.json({
